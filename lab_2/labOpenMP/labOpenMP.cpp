@@ -67,8 +67,11 @@ vector<vector<int>> multiplyMatrix(vector<vector<int>> matrixA, vector<vector<in
 
 	vector<vector<int>> matrixxResult(rowsA, vector<int>(colsB));
 
-    #pragma omp parallel for 
+	omp_set_num_threads(20);
+
+    #pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < rowsA; ++i) {
+		#pragma omp parallel for schedule(dynamic)	
 		for (int j = 0; j < colsB; ++j) {
 			int sum = 0;
             #pragma omp parallel for reduction(+:sum) 
@@ -109,7 +112,7 @@ void writeResult(string filename, vector<vector<int>>& matrixResult, int rows, i
 		return;
 	}
 
-	ofstream result("/paralProg/lab_2/result.txt", ios::app);
+	ofstream result("/paralProg/lab_2/result0.txt", ios::app);
 	if (!result.is_open()) {
 		throw runtime_error("Couldn't open the file result.txt");
 		data.close();
@@ -137,7 +140,6 @@ int main() {
 	int minValue, maxValue;
 
 	//cout << omp_get_max_threads();
-	omp_set_num_threads(20);
 
 	cout << "Enter the file name for the first matrix:";
 	cin >> fileA;
