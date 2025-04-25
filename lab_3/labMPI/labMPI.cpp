@@ -52,7 +52,6 @@ void createMatrixFile(const string& filename, int rows, int cols, int minValue, 
 vector<vector<int>> multiplyMatrixMPI(vector<vector<int>>& matrixA, vector<vector<int>>& matrixB,
     int rowsA, int colsA, int colsB, int rank, int size) {
 
-    // Проверка ошибок (как в MatrixMultiplicator)
     int error_code = 0;
     if (rank == 0) {
         if (matrixA.empty() || matrixB.empty()) {
@@ -65,37 +64,31 @@ vector<vector<int>> multiplyMatrixMPI(vector<vector<int>>& matrixA, vector<vecto
     MPI_Bcast(&error_code, 1, MPI_INT, 0, MPI_COMM_WORLD);
     if (error_code != 0) return {};
 
-    // Распределение матрицы B (как в MatrixMultiplicator)
     for (int i = 0; i < matrixB.size(); ++i) {
         MPI_Bcast(matrixB[i].data(), colsB, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
-    // Распределение строк матрицы A с использованием Scatterv (как в MatrixMultiplicator)
     vector<vector<int>> localA;
     if (rank == 0) {
         vector<int> counts(size), displs(size);
         int rows_per_process = rowsA / size;
         int remainder = rowsA % size;
 
-        // Подготовка буфера для отправки
         vector<int> send_buffer;
         send_buffer.reserve(rowsA * colsA);
         for (const auto& row : matrixA) {
             send_buffer.insert(send_buffer.end(), row.begin(), row.end());
         }
 
-        // Расчет counts и displs
         for (int i = 0; i < size; ++i) {
             counts[i] = (rows_per_process + (i < remainder ? 1 : 0)) * colsA;
             displs[i] = (i == 0) ? 0 : displs[i - 1] + counts[i - 1];
         }
 
-        // Прием своей части данных
         vector<int> recv_buffer(counts[0]);
         MPI_Scatterv(send_buffer.data(), counts.data(), displs.data(), MPI_INT,
             recv_buffer.data(), counts[0], MPI_INT, 0, MPI_COMM_WORLD);
 
-        // Преобразование буфера в localA
         int my_rows = counts[0] / colsA;
         localA.resize(my_rows, vector<int>(colsA));
         for (int i = 0; i < my_rows; ++i) {
@@ -118,7 +111,6 @@ vector<vector<int>> multiplyMatrixMPI(vector<vector<int>>& matrixA, vector<vecto
         }
     }
 
-    // Локальное умножение (оптимизированный вариант)
     vector<vector<int>> local_result(localA.size(), vector<int>(colsB, 0));
     for (size_t i = 0; i < localA.size(); ++i) {
         for (int k = 0; k < matrixB.size(); ++k) {
@@ -129,13 +121,11 @@ vector<vector<int>> multiplyMatrixMPI(vector<vector<int>>& matrixA, vector<vecto
         }
     }
 
-    // Сбор результатов (как в MatrixMultiplicator)
     vector<vector<int>> result;
     if (rank == 0) {
         result.resize(rowsA, vector<int>(colsB));
     }
 
-    // Подготовка буфера для отправки
     vector<int> send_buffer;
     send_buffer.reserve(local_result.size() * colsB);
     for (const auto& row : local_result) {
