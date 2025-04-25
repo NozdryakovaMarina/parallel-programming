@@ -1,0 +1,5 @@
+Size matrix: 10x10 | Average lead time: 0.00161749 seconds
+Size matrix: 100x100 | Average lead time: 0.0100577 seconds
+Size matrix: 500x500 | Average lead time: 0.38141 seconds
+Size matrix: 1000x1000 | Average lead time: 3.28516 seconds
+Size matrix: 2000x2000 | Average lead time: 52.8733 seconds

@@ -1,0 +1,5 @@
+Size matrix: 10x10 | Result matched
+Size matrix: 100x100 | Result matched
+Size matrix: 500x500 | Result matched
+Size matrix: 1000x1000 | Result matched
+Size matrix: 2000x2000 | Result matched
