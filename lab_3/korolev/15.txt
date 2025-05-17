@@ -1,0 +1,5 @@
+Matrix size: 10x10 | Avg time: 0.000156617 seconds
+Matrix size: 100x100 | Avg time: 0.00313687 seconds
+Matrix size: 500x500 | Avg time: 0.17831 seconds
+Matrix size: 1000x1000 | Avg time: 1.34525 seconds
+Matrix size: 2000x2000 | Avg time: 10.7003 seconds
